@@ -22,9 +22,21 @@ class OrdersUseCases {
     try {
       console.log(`createOrder() inObj: ${JSON.stringify(inObj, null, 2)}`)
 
-      // const order = new this.adapters.localdb.Orders(inObj)
-      // await order.save()
-      // console.log(`order: ${JSON.stringify(order, null, 2)}`)
+      console.log('this.adapters.wallet: ', this.adapters.wallet)
+
+      // Get a new keypair from the wallet.
+      const nextIndex = await this.adapters.walletAdapter.incrementNextAddress()
+      const keyPair = await this.adapters.walletAdapter.getKeyPair(nextIndex)
+      console.log('keyPair: ', keyPair)
+
+      inObj.wif = keyPair.wif
+      inObj.hdIndex = keyPair.hdIndex
+      inObj.bchAddr = keyPair.cashAddress
+
+      // Save the order to the database.
+      const order = new this.adapters.localdb.Orders(inObj)
+      await order.save()
+      console.log(`order: ${JSON.stringify(order, null, 2)}`)
 
       return 'fake-bch-addr'
     } catch (err) {

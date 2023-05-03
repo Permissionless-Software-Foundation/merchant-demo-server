@@ -12,6 +12,8 @@ const Order = new mongoose.Schema({
   qty: { type: String },
   txid: { type: String },
   bchAddr: { type: String },
+  wif: { type: String },
+  hdIndex: { type: String },
   timestamp: { type: Date, default: Date.now }
 })
 

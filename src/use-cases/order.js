@@ -38,7 +38,7 @@ class OrdersUseCases {
       await order.save()
       console.log(`order: ${JSON.stringify(order, null, 2)}`)
 
-      return 'fake-bch-addr'
+      return inObj.bchAddr
     } catch (err) {
       console.error('Error in createOrder(): ', err)
       throw err

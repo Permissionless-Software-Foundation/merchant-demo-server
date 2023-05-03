@@ -17,6 +17,7 @@ import JSONFiles from './json-files.js'
 import FullStackJWT from './fullstack-jwt.js'
 import config from '../../config/index.js'
 import WalletAdapter from './wallet.js'
+import PsfMsgAdapter from './psf-msg.js'
 
 class Adapters {
   constructor (localConfig = {}) {
@@ -30,6 +31,7 @@ class Adapters {
     this.bchjs = new BCHJS()
     this.config = config
     this.walletAdapter = new WalletAdapter()
+    this.psfMsg = null // placeholder
 
     // Get a valid JWT API key and instance bch-js.
     this.fullStackJwt = new FullStackJWT(config)
@@ -60,6 +62,9 @@ class Adapters {
       const walletData = await this.walletAdapter.openWallet()
       this.wallet = await this.walletAdapter.instanceWalletWithoutInitialization(walletData)
       this.bchjs = this.wallet.bchjs
+
+      // Instantiate the message library
+      this.psfMsg = new PsfMsgAdapter({ wallet: this.wallet })
 
       console.log('Async Adapters have been started.')
 

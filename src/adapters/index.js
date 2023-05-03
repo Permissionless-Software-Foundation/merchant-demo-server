@@ -9,17 +9,14 @@ import BCHJS from '@psf/bch-js'
 
 // Load individual adapter libraries.
 import IPFSAdapter from './ipfs/index.js'
-
 import LocalDB from './localdb/index.js'
 import LogsAPI from './logapi.js'
 import Passport from './passport.js'
 import Nodemailer from './nodemailer.js'
-
-// const { wlogger } = require('./wlogger')
 import JSONFiles from './json-files.js'
-
 import FullStackJWT from './fullstack-jwt.js'
 import config from '../../config/index.js'
+import WalletAdapter from './wallet.js'
 
 class Adapters {
   constructor (localConfig = {}) {
@@ -32,6 +29,7 @@ class Adapters {
     this.jsonFiles = new JSONFiles()
     this.bchjs = new BCHJS()
     this.config = config
+    this.walletAdapter = new WalletAdapter()
 
     // Get a valid JWT API key and instance bch-js.
     this.fullStackJwt = new FullStackJWT(config)
@@ -39,24 +37,29 @@ class Adapters {
 
   async start () {
     try {
-      if (this.config.getJwtAtStartup) {
-        // Get a JWT token and instantiate bch-js with it. Then pass that instance
-        // to all the rest of the apps controllers and adapters.
-        await this.fullStackJwt.getJWT()
-        // Instantiate bch-js with the JWT token, and overwrite the placeholder for bch-js.
-        this.bchjs = await this.fullStackJwt.instanceBchjs()
-      }
+      // if (this.config.getJwtAtStartup) {
+      //   // Get a JWT token and instantiate bch-js with it. Then pass that instance
+      //   // to all the rest of the apps controllers and adapters.
+      //   await this.fullStackJwt.getJWT()
+      //   // Instantiate bch-js with the JWT token, and overwrite the placeholder for bch-js.
+      //   this.bchjs = await this.fullStackJwt.instanceBchjs()
+      // }
 
       // Start the IPFS node.
       // Do not start these adapters if this is an e2e test.
-      if (this.config.env !== 'test') {
-        if (this.config.useIpfs) {
-          await this.ipfs.start()
-        }
-      } else {
-        // These lines are here to ensure code coverage hits 100%.
-        console.log('Not starting IPFS node since this is an e2e test.')
-      }
+      // if (this.config.env !== 'test') {
+      //   if (this.config.useIpfs) {
+      //     await this.ipfs.start()
+      //   }
+      // } else {
+      //   // These lines are here to ensure code coverage hits 100%.
+      //   console.log('Not starting IPFS node since this is an e2e test.')
+      // }
+
+      // Instantiate the BCH wallet.
+      const walletData = await this.walletAdapter.openWallet()
+      this.wallet = await this.walletAdapter.instanceWalletWithoutInitialization(walletData)
+      this.bchjs = this.wallet.bchjs
 
       console.log('Async Adapters have been started.')
 

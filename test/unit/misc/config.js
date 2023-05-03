@@ -22,7 +22,7 @@ describe('#config', () => {
     const config = importedConfig.default
     // console.log('config: ', config)
 
-    assert.equal(config.env, 'dev')
+    assert.equal(config.env, 'not-a-test')
   })
 
   it('Should return test environment config', async () => {

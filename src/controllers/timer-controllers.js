@@ -27,34 +27,39 @@ class TimerControllers {
     this.config = config
 
     // Bind 'this' object to all subfunctions.
-    this.exampleTimerFunc = this.exampleTimerFunc.bind(this)
+    this.checkOrders = this.checkOrders.bind(this)
 
-    this.startTimers()
+    // this.startTimers()
   }
 
   // Start all the time-based controllers.
   startTimers () {
-    // Any new timer control functions can be added here. They will be started
-    // when the server starts.
-    this.optimizeWalletHandle = setInterval(this.exampleTimerFunc, 60000 * 10)
+
+    this.checkOrdersHandle = setInterval(this.checkOrders, 600 * 10)
 
     return true
   }
 
   stopTimers () {
-    clearInterval(this.optimizeWalletHandle)
+    clearInterval(this.checkOrdersHandle)
   }
 
-  // Replace this example function with your own timer handler.
-  exampleTimerFunc (negativeTest) {
+  // Check on any outstanding orders.
+  checkOrders () {
     try {
-      console.log('Example timer controller executed.')
+      console.log('checkOrders() executed.')
 
-      if (negativeTest) throw new Error('test error')
+      // Get all orders from the database.
+
+      // Check the balance of each order.
+
+      // If the balance is sufficient, then send a message to the merchant, and delete the order from the database.
+
+      // If the order is older than 24 hours, then delete the order from the database.
 
       return true
     } catch (err) {
-      console.error('Error in exampleTimerFunc(): ', err)
+      console.error('Error in checkOrders(): ', err)
 
       // Note: Do not throw an error. This is a top-level function.
       return false

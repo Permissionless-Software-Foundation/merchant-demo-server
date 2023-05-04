@@ -34,8 +34,7 @@ class TimerControllers {
 
   // Start all the time-based controllers.
   startTimers () {
-
-    this.checkOrdersHandle = setInterval(this.checkOrders, 600 * 10)
+    this.checkOrdersHandle = setInterval(this.checkOrders, 60000 * 0.5)
 
     return true
   }
@@ -45,17 +44,11 @@ class TimerControllers {
   }
 
   // Check on any outstanding orders.
-  checkOrders () {
+  async checkOrders () {
     try {
-      console.log('checkOrders() executed.')
+      console.log('checkOrders() time controller executed.')
 
-      // Get all orders from the database.
-
-      // Check the balance of each order.
-
-      // If the balance is sufficient, then send a message to the merchant, and delete the order from the database.
-
-      // If the order is older than 24 hours, then delete the order from the database.
+      await this.useCases.order.checkOrders()
 
       return true
     } catch (err) {

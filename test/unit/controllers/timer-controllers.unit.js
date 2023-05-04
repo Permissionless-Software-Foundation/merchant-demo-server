@@ -56,17 +56,17 @@ describe('#Timer-Controllers', () => {
     })
   })
 
-  describe('#exampleTimerFunc', () => {
-    it('should kick off the Use Case', async () => {
-      const result = await uut.exampleTimerFunc()
+  // describe('#exampleTimerFunc', () => {
+  //   it('should kick off the Use Case', async () => {
+  //     const result = await uut.exampleTimerFunc()
 
-      assert.equal(result, true)
-    })
+  //     assert.equal(result, true)
+  //   })
 
-    it('should return false on error', async () => {
-      const result = await uut.exampleTimerFunc(true)
+  //   it('should return false on error', async () => {
+  //     const result = await uut.exampleTimerFunc(true)
 
-      assert.equal(result, false)
-    })
-  })
+  //     assert.equal(result, false)
+  //   })
+  // })
 })

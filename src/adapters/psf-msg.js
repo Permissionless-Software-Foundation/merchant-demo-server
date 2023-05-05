@@ -7,6 +7,7 @@
 import EncryptLib from 'bch-encrypt-lib'
 import { Write } from 'p2wdb'
 import MsgLib from 'bch-message-lib'
+import BchWallet from 'minimal-slp-wallet'
 
 class PsfMsgAdapter {
   constructor (localConfig = {}) {
@@ -18,16 +19,16 @@ class PsfMsgAdapter {
 
     // Encapsulate dependencies
     this.encryptLib = new EncryptLib({ bchjs: this.wallet.bchjs })
-    this.msg = new MsgLib({ wallet: this.wallet })
-    this.write = new Write({ bchWallet: this.wallet })
+    // this.msg = new MsgLib({ wallet: this.wallet })
+    // this.write = new Write({ bchWallet: this.wallet })
   }
 
   // Encrypt the message and upload it to the P2WDB.
   async encryptAndUpload (inObj = {}) {
-    const { bchAddress, message } = inObj
+    const { bchAddress, message, wif } = inObj
 
     // Get public Key for reciever from the blockchain.
-    // const pubKey = await this.walletService.getPubKey(bchAddress)
+    console.log(`bchAddress: ${bchAddress}`)
     const publicKey = await this.wallet.getPubKey(bchAddress)
     // const publicKey = pubKey.pubkey.publicKey
     console.log(`publicKey: ${JSON.stringify(publicKey, null, 2)}`)
@@ -43,7 +44,15 @@ class PsfMsgAdapter {
       data: encryptedMsg
     }
 
-    const result = await this.write.postEntry(data, appId)
+    // Instantiate minimal-slp-wallet using the WIF of the order, so that
+    // the new order is used to pay for the message.
+    const wallet = new BchWallet(wif, { interface: 'consumer-api' })
+    await wallet.initialize()
+
+    // Instantiate the P2WDB write library with the new wallet
+    const write = new Write({ bchWallet: wallet })
+
+    const result = await write.postEntry(data, appId)
     console.log(`Data about P2WDB write: ${JSON.stringify(result, null, 2)}`)
 
     const hash = result.hash
@@ -81,19 +90,27 @@ class PsfMsgAdapter {
 
   // Generate and broadcast a PS001 message signal.
   async sendMsgSignal (inObj = {}) {
-    const { bchAddress, subject, hash } = inObj
+    const { bchAddress, subject, hash, wif } = inObj
 
     // Wait a couple seconds to let the indexer update its UTXO state.
     await this.wallet.bchjs.Util.sleep(2000)
 
+    // Instantiate minimal-slp-wallet using the WIF of the order, so that
+    // the new order is used to pay for the message.
+    const wallet = new BchWallet(wif, { interface: 'consumer-api' })
+    await wallet.initialize()
+
+    // Instantiate the P2WDB write library with the new wallet
+    // const write = new Write({ bchWallet: wallet })
+
     // Update the UTXO store in the wallet.
-    await this.wallet.initialize()
+    // await this.wallet.initialize()
 
     // Sign Message
-    const txHex = await this.signalMessage({ hash, bchAddress, subject })
+    const txHex = await this.signalMessage({ hash, bchAddress, subject, wallet })
 
     // Broadcast Transaction
-    const txidStr = await this.wallet.ar.sendTx(txHex)
+    const txidStr = await wallet.ar.sendTx(txHex)
     console.log(`Transaction ID : ${JSON.stringify(txidStr, null, 2)}`)
 
     return txidStr
@@ -103,7 +120,7 @@ class PsfMsgAdapter {
   // https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps001-media-sharing.md
   async signalMessage (inObj) {
     try {
-      const { hash, bchAddress, subject } = inObj
+      const { hash, bchAddress, subject, wallet } = inObj
 
       if (!hash || typeof hash !== 'string') {
         throw new Error('hash must be a string')
@@ -115,8 +132,10 @@ class PsfMsgAdapter {
         throw new Error('subject must be a string')
       }
 
+      const msg = new MsgLib({ wallet })
+
       // Generate the hex transaction containing the PS001 message signal.
-      const txHex = await this.msg.memo.writeMsgSignal(
+      const txHex = await msg.memo.writeMsgSignal(
         hash,
         [bchAddress],
         subject

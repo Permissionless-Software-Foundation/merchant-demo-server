@@ -77,11 +77,12 @@ class OrderRESTControllerLib {
 
       const orderObj = ctx.request.body.order
 
-      const bchAddr = await this.useCases.order.createOrder(orderObj)
+      const { bchPayment, bchAddr } = await this.useCases.order.createOrder(orderObj)
 
       ctx.body = {
         success: true,
-        bchAddr
+        bchAddr,
+        bchPayment
       }
     } catch (err) {
       // console.log(`err.message: ${err.message}`)

@@ -12,6 +12,7 @@ const PaidOrder = new mongoose.Schema({
   shippingAddress: { type: String },
   qty: { type: String },
   txid: { type: String },
+  bchPayment: { type: Number },
   bchAddr: { type: String },
   wif: { type: String },
   hdIndex: { type: String },

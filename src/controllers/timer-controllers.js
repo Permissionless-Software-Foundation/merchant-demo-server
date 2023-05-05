@@ -5,6 +5,8 @@
 
 import config from '../../config/index.js'
 
+const checkOrdersPeriod = 60000 * 1 // 1 minute
+
 class TimerControllers {
   constructor (localConfig = {}) {
     // Dependency Injection.
@@ -34,7 +36,7 @@ class TimerControllers {
 
   // Start all the time-based controllers.
   startTimers () {
-    this.checkOrdersHandle = setInterval(this.checkOrders, 60000 * 0.5)
+    this.checkOrdersHandle = setInterval(this.checkOrders, checkOrdersPeriod)
 
     return true
   }
@@ -48,11 +50,17 @@ class TimerControllers {
     try {
       console.log('checkOrders() time controller executed.')
 
+      clearInterval(this.checkOrdersHandle)
+
       await this.useCases.order.checkOrders()
+
+      this.checkOrdersHandle = setInterval(this.checkOrders, checkOrdersPeriod)
 
       return true
     } catch (err) {
       console.error('Error in checkOrders(): ', err)
+
+      this.checkOrdersHandle = setInterval(this.checkOrders, checkOrdersPeriod)
 
       // Note: Do not throw an error. This is a top-level function.
       return false

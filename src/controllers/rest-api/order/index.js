@@ -53,6 +53,7 @@ class UserRouter {
 
     // Define the routes and attach the controller.
     this.router.post('/', this.orderRESTController.createOrder)
+    this.router.get('/payment/:bchAddr', this.orderRESTController.checkPayment)
     // this.router.get('/', this.getAll)
     // this.router.get('/:id', this.getById)
     // this.router.put('/:id', this.updateUser)

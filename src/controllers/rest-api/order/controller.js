@@ -27,6 +27,7 @@ class OrderRESTControllerLib {
     // Bind 'this' to all subfunctions
     this.createOrder = this.createOrder.bind(this)
     this.handleError = this.handleError.bind(this)
+    this.checkPayment = this.checkPayment.bind(this)
   }
 
   /**
@@ -83,6 +84,27 @@ class OrderRESTControllerLib {
         success: true,
         bchAddr,
         bchPayment
+      }
+    } catch (err) {
+      // console.log(`err.message: ${err.message}`)
+      // console.log('err: ', err)
+      // ctx.throw(422, err.message)
+      this.handleError(ctx, err)
+    }
+  }
+
+  // Check if a payment has been processed.
+  async checkPayment(ctx) {
+    try {
+      console.log('checkPayment() called')
+      console.log('ctx.params: ', ctx.params)
+
+      const bchAddr = ctx.params.bchAddr
+
+      const paid = await this.useCases.order.checkPayment({bchAddr})
+      
+      ctx.body = {
+        paid
       }
     } catch (err) {
       // console.log(`err.message: ${err.message}`)

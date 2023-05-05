@@ -151,6 +151,25 @@ class OrdersUseCases {
       throw err
     }
   }
+
+  // Check to see if a payment has been processed.
+  async checkPayment(inObj = {}) {
+    try {
+      const {bchAddr} = inObj
+
+      // Try to find the payment model in the database, based on the BCH addr.
+      const payment = await this.adapters.localdb.PaidOrders.findOne({bchAddr})
+      console.log(`payment: ${JSON.stringify(payment, null, 2)}`)
+
+      // If the payment model is found, then return true.
+      if (payment) return true
+
+      return false
+    } catch(err) {
+      console.error('Error in checkPayment(): ', err)
+      throw err
+    }
+  }
 }
 
 export default OrdersUseCases

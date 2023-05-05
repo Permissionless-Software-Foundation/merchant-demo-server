@@ -94,15 +94,15 @@ class OrderRESTControllerLib {
   }
 
   // Check if a payment has been processed.
-  async checkPayment(ctx) {
+  async checkPayment (ctx) {
     try {
       console.log('checkPayment() called')
       console.log('ctx.params: ', ctx.params)
 
       const bchAddr = ctx.params.bchAddr
 
-      const paid = await this.useCases.order.checkPayment({bchAddr})
-      
+      const paid = await this.useCases.order.checkPayment({ bchAddr })
+
       ctx.body = {
         paid
       }

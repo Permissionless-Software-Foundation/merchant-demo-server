@@ -6,6 +6,8 @@
 
 This is the back end server component that pairs with the [merchant-demo-spa](https://github.com/Permissionless-Software-Foundation/merchant-demo-spa) front end. These two pieces of software together make a simple app that merchants can use to sell items for Bitcoin Cash.
 
+If you would like to hire someone to customize this app for your store, you can [find BCH developers here](https://fullstack.cash/consulting).
+
 ## Theory of Operation
 
 This is a node.js JavaScript application using the [Koa framework](https://koajs.com/), to create a REST API web server. The [front end app](https://github.com/Permissionless-Software-Foundation/merchant-demo-spa) makes REST API calls to this back end software. There are two primary endpoints:

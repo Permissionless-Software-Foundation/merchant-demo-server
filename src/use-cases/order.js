@@ -79,13 +79,14 @@ class OrdersUseCases {
       // Check the balance of each order.
       for (let i = 0; i < orders.length; i++) {
         const order = orders[i]
+        // console.log('order: ', order)
 
         // Get the balance of the order.
         const balanceSats = await this.adapters.wallet.getBalance(order.bchAddr)
-        console.log(`balanceSats: ${JSON.stringify(balanceSats, null, 2)}`)
         const balance = this.adapters.bchjs.BitcoinCash.toBitcoinCash(balanceSats)
-        console.log(`balance: ${balance}`)
-        console.log(`order.bchPayment: ${order.bchPayment}`)
+        // console.log(`balance: ${balance}`)
+        // console.log(`order.bchPayment: ${order.bchPayment}`)
+  
 
         // If the balance is sufficient, then send a message to the merchant,
         // and delete the order from the database.
@@ -97,10 +98,10 @@ class OrdersUseCases {
 
           // Add the order to the paidOrder database model
           const paidOrderInput = order.toObject()
-          console.log(`paidOrderInput: ${JSON.stringify(paidOrderInput, null, 2)}`)
+          // console.log(`paidOrderInput: ${JSON.stringify(paidOrderInput, null, 2)}`)
           delete paidOrderInput._id
           delete paidOrderInput.__v
-          console.log(`paidOrderInput: ${JSON.stringify(paidOrderInput, null, 2)}`)
+          // console.log(`paidOrderInput: ${JSON.stringify(paidOrderInput, null, 2)}`)
 
           const paidOrder = new this.adapters.localdb.PaidOrders(paidOrderInput)
           await paidOrder.save()
@@ -109,9 +110,21 @@ class OrdersUseCases {
           // Delete the order from the database.
           await this.adapters.localdb.Orders.deleteOne({ _id: order._id })
         }
+
+        // If the order is older than 24 hours, then delete the order from the database.
+        let orderTime = new Date(order.timestamp)
+        orderTime = orderTime.getTime()
+        let now = new Date()
+        now = now.getTime()
+        const oneDay = 60000 * 60 * 24
+        const timeDiff = now - orderTime
+        if(timeDiff > oneDay) {
+          // Delete the order from the database
+          await this.adapters.localdb.Orders.deleteOne({ _id: order._id })
+        }
       }
 
-      // If the order is older than 24 hours, then delete the order from the database.
+      
 
       return true
     } catch (err) {

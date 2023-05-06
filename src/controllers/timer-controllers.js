@@ -5,7 +5,7 @@
 
 import config from '../../config/index.js'
 
-const checkOrdersPeriod = 60000 * 1 // 1 minute
+const checkOrdersPeriod = 60000 * 2 // 1 minute
 
 class TimerControllers {
   constructor (localConfig = {}) {

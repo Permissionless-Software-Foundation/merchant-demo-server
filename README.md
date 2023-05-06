@@ -4,7 +4,23 @@
 
 ## Overview
 
-This is the back end server component that pairs with the [merchant-demo-spa](#) front end. These two pieces of software together make a simple app that merchants can use to sell items for Bitcoin Cash.
+This is the back end server component that pairs with the [merchant-demo-spa](https://github.com/Permissionless-Software-Foundation/merchant-demo-spa) front end. These two pieces of software together make a simple app that merchants can use to sell items for Bitcoin Cash.
+
+## Theory of Operation
+
+This is a node.js JavaScript application using the [Koa framework](https://koajs.com/), to create a REST API web server. The [front end app](https://github.com/Permissionless-Software-Foundation/merchant-demo-spa) makes REST API calls to this back end software. There are two primary endpoints:
+
+### POST /order
+
+This endpoint creates a new order. This will take in the form information for the customer. It will return a BCH address and an amount of BCH to be paid. This information can then be displayed to the customer. 
+
+The balance of the address is periodically checked by the app. If the address recieves the payment, then the funds are used to send an end-to-end encrypted (**e2ee**) message the merchant with the form information. If the order is not funded within 24 hours, it is deleted.
+
+Paid orders are saved to a `PaidOrders` database entry. This allows store owners to easily retrieve a list of previous, funded orders.
+
+### GET /order/payment/:bchAddr
+
+The endpoint is called by the front end, to check if the payment has been detected and processed. This usually takes less than 5 minutes. Once the payment is detected, the front end can display a notification to the customer to let them know that their order has been processed.
 
 ## Requirements
 

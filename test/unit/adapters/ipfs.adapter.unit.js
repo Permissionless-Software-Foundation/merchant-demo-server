@@ -2,14 +2,15 @@
   Unit tests for the IPFS Adapter.
 */
 
+// Global npm libraries.
 import { assert } from 'chai'
-
 import sinon from 'sinon'
+
+// Local libraries.
 import IPFSLib from '../../../src/adapters/ipfs/ipfs.js'
 import create from '../mocks/ipfs-mock.js'
 import config from '../../../config/index.js'
 
-// config.isProduction =  true;
 describe('#IPFS-adapter', () => {
   let uut
   let sandbox

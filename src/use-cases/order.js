@@ -83,7 +83,7 @@ class OrdersUseCases {
 
         // Get the balance of the order.
         const balanceSats = await this.adapters.wallet.getBalance(order.bchAddr)
-        const balance = this.adapters.bchjs.BitcoinCash.toBitcoinCash(balanceSats)
+        const balance = this.adapters.wallet.bchjs.BitcoinCash.toBitcoinCash(balanceSats)
         // console.log(`balance: ${balance}`)
         // console.log(`order.bchPayment: ${order.bchPayment}`)
 
@@ -125,10 +125,8 @@ class OrdersUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in checkOrders(): ', err)
-
-      // Note: Do not throw an error. This is a top-level function.
-      return false
+      console.error('Error in checkOrders() use-case library')
+      throw err
     }
   }
 
@@ -176,7 +174,7 @@ class OrdersUseCases {
 
       return false
     } catch (err) {
-      console.error('Error in checkPayment(): ', err)
+      console.error('Error in checkPayment()')
       throw err
     }
   }

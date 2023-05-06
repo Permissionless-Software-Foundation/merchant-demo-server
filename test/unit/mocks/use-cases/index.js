@@ -35,6 +35,14 @@ class Order {
   async checkOrders() {
     return {}
   }
+
+  async createOrder() {
+    return {}
+  }
+
+  async checkPayment() {
+    return {}
+  }
 }
 
 class UseCasesMock {

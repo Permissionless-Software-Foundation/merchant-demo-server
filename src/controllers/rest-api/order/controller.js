@@ -33,43 +33,12 @@ class OrderRESTControllerLib {
   /**
    * @api {post} /order Create a new order
    * @apiPermission public
-   * @apiName CreateOrder
+   * @apiName Create Order
    * @apiGroup REST Orders
    *
    * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X POST -d '{ "user": { "email": "email@format.com", "name": "my name", "password": "secretpasas" } }' localhost:5010/users
+   * curl -H "Content-Type: application/json" -X POST -d '{ "order": { "emailAddress": "email@format.com", "shippingName": "my name", "shippingAddress": "123 Somewhere", "qty": 1 } }' localhost:5010/order
    *
-   * @apiParam {Object} user          User object (required)
-   * @apiParam {String} user.email Email
-   * @apiParam {String} user.password Password
-   * @apiParam {String} user.name name or handle
-   *
-   * @apiSuccess {Object}   users           User object
-   * @apiSuccess {ObjectId} users._id       User id
-   * @apiSuccess {String}   user.type       User type (admin or user)
-   * @apiSuccess {String}   users.name      User name
-   * @apiSuccess {String}   users.username  User username
-   * @apiSuccess {String}   users.email     User email
-   *
-   * @apiSuccessExample {json} Success-Response:
-   *     HTTP/1.1 200 OK
-   *     {
-   *       "user": {
-   *          "_id": "56bd1da600a526986cf65c80"
-   *          "name": "John Doe"
-   *          "email": "email@format.com",
-   *          "password": "somestrongpassword"
-   *       }
-   *     }
-   *
-   * @apiError UnprocessableEntity Missing required parameters
-   *
-   * @apiErrorExample {json} Error-Response:
-   *     HTTP/1.1 422 Unprocessable Entity
-   *     {
-   *       "status": 422,
-   *       "error": "Unprocessable Entity"
-   *     }
    */
   async createOrder (ctx) {
     try {
@@ -92,6 +61,17 @@ class OrderRESTControllerLib {
       this.handleError(ctx, err)
     }
   }
+
+  /**
+   * @api {get} /order/payment/:bchAddr Get user by id
+   * @apiPermission public
+   * @apiName Check Payment
+   * @apiGroup REST Orders
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5010/order/payment/bitcoincash:qpvgdxgj6nw2cxyhnnsqlz9k6dwptgtrxgv7ne86tv
+   *
+   */
 
   // Check if a payment has been processed.
   async checkPayment (ctx) {

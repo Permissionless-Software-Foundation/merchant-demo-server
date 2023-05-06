@@ -10,8 +10,6 @@ import OrderRESTControllerLib from './controller.js'
 
 import Validators from '../middleware/validators.js'
 
-// let _this
-
 class UserRouter {
   constructor (localConfig = {}) {
     // Dependency Injection.
@@ -40,8 +38,6 @@ class UserRouter {
     // Instantiate the router and set the base route.
     const baseUrl = '/order'
     this.router = new Router({ prefix: baseUrl })
-
-    // _this = this
   }
 
   attach (app) {
@@ -54,37 +50,11 @@ class UserRouter {
     // Define the routes and attach the controller.
     this.router.post('/', this.orderRESTController.createOrder)
     this.router.get('/payment/:bchAddr', this.orderRESTController.checkPayment)
-    // this.router.get('/', this.getAll)
-    // this.router.get('/:id', this.getById)
-    // this.router.put('/:id', this.updateUser)
-    // this.router.delete('/:id', this.deleteUser)
 
     // Attach the Controller routes to the Koa app.
     app.use(this.router.routes())
     app.use(this.router.allowedMethods())
   }
-
-  // async getAll (ctx, next) {
-  //   await _this.validators.ensureUser(ctx, next)
-  //   await _this.orderRESTController.getUsers(ctx, next)
-  // }
-  //
-  // async getById (ctx, next) {
-  //   await _this.validators.ensureUser(ctx, next)
-  //   await _this.orderRESTController.getUser(ctx, next)
-  // }
-  //
-  // async updateUser (ctx, next) {
-  //   await _this.validators.ensureTargetUserOrAdmin(ctx, next)
-  //   await _this.orderRESTController.getUser(ctx, next)
-  //   await _this.orderRESTController.updateUser(ctx, next)
-  // }
-  //
-  // async deleteUser (ctx, next) {
-  //   await _this.validators.ensureTargetUserOrAdmin(ctx, next)
-  //   await _this.orderRESTController.getUser(ctx, next)
-  //   await _this.orderRESTController.deleteUser(ctx, next)
-  // }
 }
 
 export default UserRouter

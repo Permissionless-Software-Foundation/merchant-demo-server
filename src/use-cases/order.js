@@ -86,7 +86,6 @@ class OrdersUseCases {
         const balance = this.adapters.bchjs.BitcoinCash.toBitcoinCash(balanceSats)
         // console.log(`balance: ${balance}`)
         // console.log(`order.bchPayment: ${order.bchPayment}`)
-  
 
         // If the balance is sufficient, then send a message to the merchant,
         // and delete the order from the database.
@@ -118,13 +117,11 @@ class OrdersUseCases {
         now = now.getTime()
         const oneDay = 60000 * 60 * 24
         const timeDiff = now - orderTime
-        if(timeDiff > oneDay) {
+        if (timeDiff > oneDay) {
           // Delete the order from the database
           await this.adapters.localdb.Orders.deleteOne({ _id: order._id })
         }
       }
-
-      
 
       return true
     } catch (err) {

@@ -56,17 +56,33 @@ describe('#Timer-Controllers', () => {
     })
   })
 
-  // describe('#exampleTimerFunc', () => {
-  //   it('should kick off the Use Case', async () => {
-  //     const result = await uut.exampleTimerFunc()
+  describe('#startTimers', () => {
+    it('should start the timers', () => {
+      const result = uut.startTimers()
 
-  //     assert.equal(result, true)
-  //   })
+      uut.stopTimers()
 
-  //   it('should return false on error', async () => {
-  //     const result = await uut.exampleTimerFunc(true)
+      assert.equal(result, true)
+    })
+  })
 
-  //     assert.equal(result, false)
-  //   })
-  // })
+  describe('#checkOrders', () => {
+    it('should call the use case library from the timer controller', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.useCases.order,'checkOrders').resolves()
+
+      const result = await uut.checkOrders()
+
+      assert.equal(result, true)
+    })
+
+    it('should re-enable the timer controller, when an error occurs', async () => {
+      // Force an error
+      sandbox.stub(uut.useCases.order,'checkOrders').rejects(new Error('test error'))
+
+      const result = await uut.checkOrders()
+
+      assert.equal(result, false)
+    })
+  })
 })

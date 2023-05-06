@@ -11,6 +11,7 @@ import AuthRESTController from './auth/index.js'
 import UserRouter from './users/index.js'
 import ContactRESTController from './contact/index.js'
 import LogsRESTController from './logs/index.js'
+import OrdersRESTControllers from './order/index.js'
 
 class RESTControllers {
   constructor (localConfig = {}) {
@@ -52,6 +53,10 @@ class RESTControllers {
     // Attach the REST API Controllers associated with the /logs route
     const logsRESTController = new LogsRESTController(dependencies)
     logsRESTController.attach(app)
+
+    // Attach the REST API Controllers associated with the /orders route
+    const ordersRESTController = new OrdersRESTControllers(dependencies)
+    ordersRESTController.attach(app)
   }
 }
 

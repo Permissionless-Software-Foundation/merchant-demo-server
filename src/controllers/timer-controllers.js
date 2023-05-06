@@ -5,6 +5,8 @@
 
 import config from '../../config/index.js'
 
+const checkOrdersPeriod = 60000 * 2 // 1 minute
+
 class TimerControllers {
   constructor (localConfig = {}) {
     // Dependency Injection.
@@ -27,34 +29,38 @@ class TimerControllers {
     this.config = config
 
     // Bind 'this' object to all subfunctions.
-    this.exampleTimerFunc = this.exampleTimerFunc.bind(this)
+    this.checkOrders = this.checkOrders.bind(this)
 
-    this.startTimers()
+    // this.startTimers()
   }
 
   // Start all the time-based controllers.
   startTimers () {
-    // Any new timer control functions can be added here. They will be started
-    // when the server starts.
-    this.optimizeWalletHandle = setInterval(this.exampleTimerFunc, 60000 * 10)
+    this.checkOrdersHandle = setInterval(this.checkOrders, checkOrdersPeriod)
 
     return true
   }
 
   stopTimers () {
-    clearInterval(this.optimizeWalletHandle)
+    clearInterval(this.checkOrdersHandle)
   }
 
-  // Replace this example function with your own timer handler.
-  exampleTimerFunc (negativeTest) {
+  // Check on any outstanding orders.
+  async checkOrders () {
     try {
-      console.log('Example timer controller executed.')
+      console.log('checkOrders() time controller executed.')
 
-      if (negativeTest) throw new Error('test error')
+      clearInterval(this.checkOrdersHandle)
+
+      await this.useCases.order.checkOrders()
+
+      this.checkOrdersHandle = setInterval(this.checkOrders, checkOrdersPeriod)
 
       return true
     } catch (err) {
-      console.error('Error in exampleTimerFunc(): ', err)
+      console.error('Error in checkOrders(): ', err)
+
+      this.checkOrdersHandle = setInterval(this.checkOrders, checkOrdersPeriod)
 
       // Note: Do not throw an error. This is a top-level function.
       return false

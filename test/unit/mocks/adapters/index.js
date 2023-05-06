@@ -2,6 +2,20 @@
   Mocks for the Adapter library.
 */
 
+class WalletAdapter {
+  constructor() {
+
+  }
+
+  async incrementNextAddress() {
+    return {}
+  }
+
+  async getKeyPair() {
+    return {}
+  }
+}
+
 class IpfsAdapter {
   constructor () {
     this.ipfs = {
@@ -63,7 +77,45 @@ const localdb = {
 
   validatePassword: () => {
     return true
+  },
+
+  Orders: class Orders {
+    static find () {}
+    static async deleteOne() {}
+
+    async save () {
+      return {}
+    }
+  },
+
+  PaidOrders: class PaidOrders {
+    static find () {}
+    static findOne () {
+      return {}
+    }
+
+    async save () {
+      return {}
+    }
   }
 }
 
-export default { ipfs, localdb };
+const wallet = {
+  getUsd: async () => {},
+  bchjs: {
+    Util: {
+      floor8: () => 0.01
+    },
+    BitcoinCash: {
+      toBitcoinCash: () => 0.0001
+    }
+  },
+  getBalance: async () => 1000
+}
+
+const psfMsg = {
+  encryptAndUpload: async () => {},
+  sendMsgSignal: async () => {}
+}
+
+export default { ipfs, localdb, walletAdapter: new WalletAdapter(), wallet, psfMsg };

@@ -95,5 +95,10 @@ export default {
     ? parseInt(process.env.IPFS_API_PORT)
     : 5001,
 
-  chatPubSubChan: 'psf-ipfs-chat-001'
+  chatPubSubChan: 'psf-ipfs-chat-001',
+
+  // Environment variables for the SPA
+  productPrice: 0.05, // Price in USD
+  merchantAddr: 'bitcoincash:qr0duqpv7w49ld6d93dj2y26racj4s9teyshyua9p7'
+
 }

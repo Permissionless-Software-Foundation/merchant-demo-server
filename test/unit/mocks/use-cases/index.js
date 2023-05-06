@@ -31,12 +31,27 @@ class UserUseCaseMock {
   }
 }
 
+class Order {
+  async checkOrders() {
+    return {}
+  }
+
+  async createOrder() {
+    return {}
+  }
+
+  async checkPayment() {
+    return {}
+  }
+}
+
 class UseCasesMock {
   constuctor(localConfig = {}) {
     // this.user = new UserUseCaseMock(localConfig)
   }
 
   user = new UserUseCaseMock()
+  order = new Order()
 }
 
 export default UseCasesMock;

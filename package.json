@@ -2,10 +2,10 @@
   "name": "merchant-demo-server",
   "version": "3.0.0",
   "description": "A REST API back end for the merchant-demo-spa front end.",
-  "main": "index.js",
+  "main": "merchant-api.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "start": "node merchant-api.js",
     "test": "npm run test:all",
     "test:all": "export SVC_ENV=test && c8 --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/e2e/automated/",
     "test:unit": "export SVC_ENV=test && mocha --exit --timeout 15000 --recursive test/unit/",

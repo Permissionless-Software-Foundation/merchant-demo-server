@@ -69,7 +69,7 @@ describe('#Timer-Controllers', () => {
   describe('#checkOrders', () => {
     it('should call the use case library from the timer controller', async () => {
       // Mock dependencies and force desired code path.
-      sandbox.stub(uut.useCases.order,'checkOrders').resolves()
+      sandbox.stub(uut.useCases.order, 'checkOrders').resolves()
 
       const result = await uut.checkOrders()
 
@@ -78,7 +78,7 @@ describe('#Timer-Controllers', () => {
 
     it('should re-enable the timer controller, when an error occurs', async () => {
       // Force an error
-      sandbox.stub(uut.useCases.order,'checkOrders').rejects(new Error('test error'))
+      sandbox.stub(uut.useCases.order, 'checkOrders').rejects(new Error('test error'))
 
       const result = await uut.checkOrders()
 

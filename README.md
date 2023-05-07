@@ -16,9 +16,11 @@ This is a node.js JavaScript application using the [Koa framework](https://koajs
 
 This endpoint creates a new order. This will take in the form information for the customer. It will return a BCH address and an amount of BCH to be paid. This information can then be displayed to the customer. 
 
-The balance of the address is periodically checked by the app. If the address recieves the payment, then the funds are used to send an end-to-end encrypted (**e2ee**) message the merchant with the form information. If the order is not funded within 24 hours, it is deleted.
+The balance of the address is periodically checked by the app. If the address recieves the payment, then the funds are used to send an end-to-end encrypted (**e2ee**) message the merchant with the form information, and the private key controlling the customer payment. If the order is not funded within 24 hours, it is deleted.
 
-Paid orders are saved to a `PaidOrders` database entry. This allows store owners to easily retrieve a list of previous, funded orders.
+Paid orders are saved to a `PaidOrders` database entry. This allows merchants to easily retrieve a list of previous, funded orders.
+
+Merchants can check for new e2ee messages using the [msg-check](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet#psf-bch-wallet-msg-check) and [msg-read](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet#psf-bch-wallet-msg-read) commands in psf-bch-wallet CLI wallet. A second back end app will be developed that can detect new messages and send an alert via email.
 
 ### GET /order/payment/:bchAddr
 

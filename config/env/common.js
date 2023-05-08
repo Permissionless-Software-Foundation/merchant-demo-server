@@ -97,7 +97,7 @@ export default {
 
   chatPubSubChan: 'psf-ipfs-chat-001',
 
-  // Environment variables for the SPA
+  // Customize these variables for your own store.
   productPrice: 0.05, // Price in USD
   merchantAddr: 'bitcoincash:qqstpfgfy2rdsgg4ruu29qdycu3nkax9fsaj27ayrs'
 

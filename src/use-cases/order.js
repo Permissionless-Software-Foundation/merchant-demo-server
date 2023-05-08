@@ -167,7 +167,7 @@ class OrdersUseCases {
 
       // Try to find the payment model in the database, based on the BCH addr.
       const payment = await this.adapters.localdb.PaidOrders.findOne({ bchAddr })
-      console.log(`payment: ${JSON.stringify(payment, null, 2)}`)
+      // console.log(`payment: ${JSON.stringify(payment, null, 2)}`)
 
       // If the payment model is found, then return true.
       if (payment) return true

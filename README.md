@@ -8,6 +8,13 @@ This is the back end server component that pairs with the [merchant-demo-spa](ht
 
 If you would like to hire someone to customize this app for your store, you can [find BCH developers here](https://fullstack.cash/consulting).
 
+## Videos
+
+- [Part 1: Introduction and Demo](https://youtu.be/jOv2c6kvdX4)
+- [Part 2: Customizing the React front end](https://youtu.be/QghTUkx1hk0)
+- [Part 3: Customizing the node.js back end](https://youtu.be/yMFNbqU3icM)
+- [Part 4: Setting up email notifications](https://youtu.be/3gCvxNx-P30)
+
 ## Theory of Operation
 
 This is a node.js JavaScript application using the [Koa framework](https://koajs.com/), to create a REST API web server. The [front end app](https://github.com/Permissionless-Software-Foundation/merchant-demo-spa) makes REST API calls to this back end software. There are two primary endpoints:

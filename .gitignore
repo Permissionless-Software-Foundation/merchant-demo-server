@@ -66,6 +66,8 @@ orbitdb
 ipfsdata
 .ipfsdata
 data/
-wallet.json
+run-dev.sh
 
 !README.md
+
+wallet.json

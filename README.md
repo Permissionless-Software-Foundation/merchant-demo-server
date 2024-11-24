@@ -35,8 +35,8 @@ This endpoint is called by the front end, to check if the payment has been detec
 
 ## Requirements
 
-- node **^16.19.0**
-- npm **^8.19.3**
+- node **^20.16.0**
+- npm **^10.8.1**
 - Docker **^20.10.8**
 - Docker Compose **^1.27.4**
 
@@ -62,7 +62,7 @@ npm start
 The BCH address for the merchant will be sent an end-to-end encrypted (e2ee) messages when a new order is placed and funded. Merchants can use the [msg-check](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet#psf-bch-wallet-msg-check) and [msg-read](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet#psf-bch-wallet-msg-read) commands in psf-bch-wallet CLI wallet. The [e2ee-email-notifier](https://github.com/Permissionless-Software-Foundation/e2ee-email-notifier) is a second app that can configured to detect these e2ee messages, and notify the merchant via email that they have a new e2ee message.
 
 
-## Structure
+This app is intended to be started via a bash shell script. See the environment variables used to configure this app in the [config/env/common.js file](./config/env/common.js).
 
 The file layout of this repository differs from the koa-api-boilerplate. Instead, it follows the file layout of [Clean Architecture](https://christroutner.github.io/trouts-blog/blog/clean-architecture). The [Pedigree document](./PEDIGREE.md) links to the open source repositories used to build this application.
 
@@ -71,8 +71,6 @@ The file layout of this repository differs from the koa-api-boilerplate. Instead
 - `npm start` Start server on live mode
 - `npm run docs` Generate API documentation
 - `npm test` Run mocha tests
-- `docker-compose build` Build a 'production' Docker container
-- `docker-compose up` Run the docker container
 
 ## License
 

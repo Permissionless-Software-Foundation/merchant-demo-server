@@ -2,15 +2,14 @@
   Unit tests for the Wallet Adapter library.
 */
 
-// Public npm libraries.
+// Global npm libraries
 import { assert } from 'chai'
 import sinon from 'sinon'
-import fs from 'fs'
 import BchWallet from 'minimal-slp-wallet'
-// const BCHJS = require('@psf/bch-js')
+import fs from 'fs'
 
-// Local libraries.
-import WalletAdapter from '../../../src/adapters/wallet.js'
+// Local libraries
+import WalletAdapter from '../../../src/adapters/wallet.adapter.js'
 import { MockBchWallet } from '../mocks/adapters/wallet.js'
 
 // Hack to get __dirname back.
@@ -29,7 +28,7 @@ describe('#wallet', () => {
     // Delete the test file if it exists.
     try {
       deleteFile(testWalletFile)
-    } catch (err) {}
+    } catch (err) { }
   })
 
   beforeEach(() => {
@@ -43,20 +42,26 @@ describe('#wallet', () => {
     // Delete the test file if it exists.
     try {
       deleteFile(testWalletFile)
-    } catch (err) {}
+    } catch (err) { }
+  })
+
+  describe('#_instanceWallet', () => {
+    it('should create a wallet given a mnemonic', async () => {
+      const mnemonic = 'wagon tray learn flat erase laugh lonely rug check captain jacket morning'
+      const result = await uut._instanceWallet(mnemonic)
+      // console.log('result: ', result)
+      assert.equal(result.walletInfo.mnemonic, mnemonic)
+    })
   })
 
   describe('#openWallet', () => {
-    it('should create a new wallet what wallet file does not exist', async () => {
+    it('should create a new wallet when wallet file does not exist', async () => {
       // Mock dependencies
       uut.BchWallet = MockBchWallet
-
       // Ensure we open the test file, not the production wallet file.
-      uut.WALLET_FILE = testWalletFile
-
+      uut.config.walletFile = testWalletFile
       const result = await uut.openWallet()
       // console.log('result: ', result)
-
       assert.property(result, 'mnemonic')
       assert.property(result, 'privateKey')
       assert.property(result, 'publicKey')
@@ -69,13 +74,10 @@ describe('#wallet', () => {
 
     it('should open existing wallet file', async () => {
       // This test case uses the file created in the previous test case.
-
       // Ensure we open the test file, not the production wallet file.
-      uut.WALLET_FILE = testWalletFile
-
+      uut.config.walletFile = testWalletFile
       const result = await uut.openWallet()
       // console.log('result: ', result)
-
       assert.property(result, 'mnemonic')
       assert.property(result, 'privateKey')
       assert.property(result, 'publicKey')
@@ -89,18 +91,103 @@ describe('#wallet', () => {
     it('should catch and throw an error', async () => {
       try {
         // Force an error
-        uut.WALLET_FILE = ''
+        uut.config.walletFile = ''
         uut.BchWallet = () => {
         }
-
         await uut.openWallet()
         // console.log('result: ', result)
-
         assert.fail('Unexpected code path')
       } catch (err) {
         // console.log('err: ', err)
         assert.include(err.message, 'this.BchWallet is not a constructor')
       }
+    })
+  })
+
+  describe('#instanceWalletWithoutInitialization', () => {
+    it('should create an instance of BchWallet', async () => {
+      // Create a mock wallet.
+      const mockWallet = new BchWallet()
+      await mockWallet.walletInfoPromise
+      sandbox.stub(mockWallet, 'initialize').resolves()
+
+      // Mock dependencies
+      sandbox.stub(uut, '_instanceWallet').resolves(mockWallet)
+      uut.config.authPass = 'fake-auth-pass'
+
+      // Ensure we open the test file, not the production wallet file.
+      uut.config.walletFile = testWalletFile
+      const walletData = await uut.openWallet()
+
+      // console.log('walletData: ', walletData)
+      const result = await uut.instanceWalletWithoutInitialization(walletData)
+      // console.log('result: ', result)
+
+      assert.property(result, 'walletInfoPromise')
+      assert.property(result, 'walletInfo')
+    })
+
+    it('should catch and throw an error', async () => {
+      try {
+        // Force an error
+        sandbox.stub(uut, '_instanceWallet').rejects(new Error('test error'))
+
+        await uut.instanceWalletWithoutInitialization()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        assert.include(err.message, 'test error')
+      }
+    })
+
+    it('should create an instance of BchWallet using web2 infra', async () => {
+      // Create a mock wallet.
+      const mockWallet = new BchWallet()
+      await mockWallet.walletInfoPromise
+      sandbox.stub(mockWallet, 'initialize').resolves()
+
+      // Mock dependencies
+      sandbox.stub(uut, '_instanceWallet').resolves(mockWallet)
+
+      // Ensure we open the test file, not the production wallet file.
+      uut.config.walletFile = testWalletFile
+      const walletData = await uut.openWallet()
+      // console.log('walletData: ', walletData)
+
+      // Force desired code path
+      uut.config.walletInterface = 'web2'
+      const result = await uut.instanceWalletWithoutInitialization(walletData)
+
+      // console.log('result: ', result)
+      assert.property(result, 'walletInfoPromise')
+      assert.property(result, 'walletInfo')
+    })
+
+    it('should generate wallet from mnemonic in config', async () => {
+      // Create a mock wallet.
+      const mockWallet = new BchWallet()
+      await mockWallet.walletInfoPromise
+      sandbox.stub(mockWallet, 'initialize').resolves()
+
+      // Mock dependencies
+      sandbox.stub(uut, '_instanceWallet').resolves(mockWallet)
+
+      // Ensure we open the test file, not the production wallet file.
+      uut.config.walletFile = testWalletFile
+      const walletData = await uut.openWallet()
+      // console.log('walletData: ', walletData)
+
+      const originalConfig = uut.config.mnemonic
+      uut.config.mnemonic = walletData.mnemonic
+
+      const result = await uut.instanceWalletWithoutInitialization({})
+      // console.log('result: ', result)
+
+      uut.config.mnemonic = originalConfig
+
+      assert.property(result, 'walletInfoPromise')
+      assert.property(result, 'walletInfo')
     })
   })
 
@@ -116,10 +203,8 @@ describe('#wallet', () => {
 
       // Ensure we open the test file, not the production wallet file.
       uut.WALLET_FILE = testWalletFile
-
       const walletData = await uut.openWallet()
       // console.log('walletData: ', walletData)
-
       const result = await uut.instanceWallet(walletData)
       // console.log('result: ', result)
 
@@ -129,29 +214,14 @@ describe('#wallet', () => {
 
     it('should catch and throw an error', async () => {
       try {
+        // Force an error
+        sandbox.stub(uut, 'instanceWalletWithoutInitialization').rejects(new Error('test error'))
+
         await uut.instanceWallet()
-
         assert.fail('Unexpected code path')
       } catch (err) {
         // console.log('err: ', err)
-        assert.include(err.message, 'Cannot read')
-      }
-    })
-
-    it('should throw an error if walletData does not have a mnemonic property', async () => {
-      try {
-        // Ensure we open the test file, not the production wallet file.
-        uut.WALLET_FILE = testWalletFile
-
-        const walletData = await uut.openWallet()
-        delete walletData.mnemonic
-
-        await uut.instanceWallet(walletData)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        // console.log('err: ', err)
-        assert.include(err.message, 'Wallet data is not formatted correctly')
+        assert.include(err.message, 'test error')
       }
     })
 
@@ -166,120 +236,16 @@ describe('#wallet', () => {
 
       // Ensure we open the test file, not the production wallet file.
       uut.WALLET_FILE = testWalletFile
-
       const walletData = await uut.openWallet()
       // console.log('walletData: ', walletData)
 
       // Force desired code path
       uut.config.useFullStackCash = true
-
       const result = await uut.instanceWallet(walletData)
       // console.log('result: ', result)
 
       assert.property(result, 'walletInfoPromise')
       assert.property(result, 'walletInfo')
-    })
-  })
-
-  describe('#instanceWalletWithoutInitialization', () => {
-    it('should create an instance of BchWallet', async () => {
-      // Create a mock wallet.
-      const mockWallet = new BchWallet()
-      await mockWallet.walletInfoPromise
-      sandbox.stub(mockWallet, 'initialize').resolves()
-
-      // Mock dependencies
-      sandbox.stub(uut, '_instanceWallet').resolves(mockWallet)
-
-      // Ensure we open the test file, not the production wallet file.
-      uut.WALLET_FILE = testWalletFile
-
-      const walletData = await uut.openWallet()
-      // console.log('walletData: ', walletData)
-
-      const result = await uut.instanceWalletWithoutInitialization(walletData)
-      // console.log('result: ', result)
-
-      assert.property(result, 'walletInfoPromise')
-      assert.property(result, 'walletInfo')
-    })
-
-    it('should catch and throw an error', async () => {
-      try {
-        await uut.instanceWalletWithoutInitialization()
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        // console.log('err: ', err)
-        assert.include(err.message, 'Cannot read')
-      }
-    })
-
-    it('should throw an error if walletData does not have a mnemonic property', async () => {
-      try {
-        // Ensure we open the test file, not the production wallet file.
-        uut.WALLET_FILE = testWalletFile
-
-        const walletData = await uut.openWallet()
-        delete walletData.mnemonic
-
-        await uut.instanceWalletWithoutInitialization(walletData)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        // console.log('err: ', err)
-        assert.include(err.message, 'Wallet data is not formatted correctly')
-      }
-    })
-
-    it('should create an instance of BchWallet using web2 infra', async () => {
-      // Create a mock wallet.
-      const mockWallet = new BchWallet()
-      await mockWallet.walletInfoPromise
-      sandbox.stub(mockWallet, 'initialize').resolves()
-
-      // Mock dependencies
-      sandbox.stub(uut, '_instanceWallet').resolves(mockWallet)
-
-      // Ensure we open the test file, not the production wallet file.
-      uut.WALLET_FILE = testWalletFile
-
-      const walletData = await uut.openWallet()
-      // console.log('walletData: ', walletData)
-
-      // Force desired code path
-      uut.config.useFullStackCash = true
-
-      const result = await uut.instanceWalletWithoutInitialization(walletData)
-      // console.log('result: ', result)
-
-      assert.property(result, 'walletInfoPromise')
-      assert.property(result, 'walletInfo')
-    })
-  })
-
-  describe('#initialize', () => {
-    it('should trigger wrapped function', async () => {
-      const walletData = await uut.openWallet()
-      await uut.instanceWalletWithoutInitialization(walletData)
-
-      // Mock dependency and force desired code path.
-      sandbox.stub(uut.bchWallet, 'initialize').resolves()
-
-      const result = await uut.initialize()
-
-      assert.equal(result, true)
-    })
-  })
-
-  describe('#_instanceWallet', () => {
-    it('should create a wallet given a mnemonic', async () => {
-      const mnemonic = 'wagon tray learn flat erase laugh lonely rug check captain jacket morning'
-
-      const result = await uut._instanceWallet(mnemonic)
-      // console.log('result: ', result)
-
-      assert.equal(result.walletInfo.mnemonic, mnemonic)
     })
   })
 
@@ -287,12 +253,9 @@ describe('#wallet', () => {
     it('should increment the nextAddress property', async () => {
       // Ensure we open the test file, not the production wallet file.
       uut.WALLET_FILE = testWalletFile
-
       // mock instance of minimal-slp-wallet
       uut.bchWallet = new MockBchWallet()
-
       const result = await uut.incrementNextAddress()
-
       assert.equal(result, 2)
     })
 
@@ -300,9 +263,7 @@ describe('#wallet', () => {
       try {
         // Force an error
         sandbox.stub(uut, 'openWallet').rejects(new Error('test error'))
-
         await uut.incrementNextAddress()
-
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')
@@ -313,10 +274,8 @@ describe('#wallet', () => {
   describe('#getKeyPair', () => {
     it('should return an object with a key pair', async () => {
       // Ensure we open the test file, not the production wallet file.
-      uut.WALLET_FILE = testWalletFile
-
-      // mock instance of minimal-slp-wallet
-      uut.bchWallet = new MockBchWallet()
+      // uut.WALLET_FILE = testWalletFile
+      uut.config.walletFile = testWalletFile
 
       const result = await uut.getKeyPair()
       // console.log('result: ', result)
@@ -332,9 +291,7 @@ describe('#wallet', () => {
         sandbox
           .stub(uut, 'incrementNextAddress')
           .rejects(new Error('test error'))
-
         await uut.getKeyPair()
-
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')
@@ -347,9 +304,7 @@ describe('#wallet', () => {
       // mock instance of minimal-slp-wallet
       uut.bchWallet = new MockBchWallet()
       sandbox.stub(uut.bchWallet, 'optimize').resolves({ bchUtxoCnt: 10 })
-
       const result = await uut.optimize()
-
       assert.equal(result, true)
     })
   })
@@ -358,7 +313,6 @@ describe('#wallet', () => {
     it('should get the balance for the wallet', async () => {
       // mock instance of minimal-slp-wallet
       uut.bchWallet = new MockBchWallet()
-
       // Mock dependencies and force desired code path
       sandbox.stub(uut.bchWallet, 'getBalance').resolves(41012)
       sandbox.stub(uut.bchWallet, 'listTokens').resolves([{
@@ -370,10 +324,8 @@ describe('#wallet', () => {
         url: 'psfoundation.cash',
         qty: 2
       }])
-
       const result = await uut.getBalance()
       // console.log('result: ', result)
-
       // Assert the expected properties exist and have the expected values.
       assert.equal(result.satBalance, 41012)
       assert.equal(result.psfBalance, 2)

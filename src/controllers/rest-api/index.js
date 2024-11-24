@@ -11,6 +11,8 @@ import AuthRESTController from './auth/index.js'
 import UserRouter from './users/index.js'
 import ContactRESTController from './contact/index.js'
 import LogsRESTController from './logs/index.js'
+import IpfsRESTController from './ipfs/index.js'
+import config from '../../../config/index.js'
 import OrdersRESTControllers from './order/index.js'
 
 class RESTControllers {
@@ -29,7 +31,8 @@ class RESTControllers {
       )
     }
 
-    // console.log('Controllers localConfig: ', localConfig)
+    // Encapsulate dependencies
+    this.config = config
   }
 
   attachRESTControllers (app) {
@@ -38,13 +41,15 @@ class RESTControllers {
       useCases: this.useCases
     }
 
-    // Attach the REST API Controllers associated with the /auth route
-    const authRESTController = new AuthRESTController(dependencies)
-    authRESTController.attach(app)
+    if (!this.config.noMongo) {
+      // Attach the REST API Controllers associated with the /auth route
+      const authRESTController = new AuthRESTController(dependencies)
+      authRESTController.attach(app)
 
-    // Attach the REST API Controllers associated with the /user route
-    const userRouter = new UserRouter(dependencies)
-    userRouter.attach(app)
+      // Attach the REST API Controllers associated with the /user route
+      const userRouter = new UserRouter(dependencies)
+      userRouter.attach(app)
+    }
 
     // Attach the REST API Controllers associated with the /contact route
     const contactRESTController = new ContactRESTController(dependencies)
@@ -53,6 +58,10 @@ class RESTControllers {
     // Attach the REST API Controllers associated with the /logs route
     const logsRESTController = new LogsRESTController(dependencies)
     logsRESTController.attach(app)
+
+    // Attach the REST API Controllers associated with the /ipfs route
+    const ipfsRESTController = new IpfsRESTController(dependencies)
+    ipfsRESTController.attach(app)
 
     // Attach the REST API Controllers associated with the /orders route
     const ordersRESTController = new OrdersRESTControllers(dependencies)
